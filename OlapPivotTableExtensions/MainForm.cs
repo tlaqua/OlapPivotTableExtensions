@@ -2319,8 +2319,20 @@ namespace OlapPivotTableExtensions
                         AdomdRestrictionCollection restrictions = new AdomdRestrictionCollection();
                         restrictions.Add(new AdomdRestriction("CATALOG_NAME", cube.ParentConnection.Database));
                         restrictions.Add(new AdomdRestriction("CUBE_NAME", cube.Name));
-                        restrictions.Add(new AdomdRestriction("HIERARCHY_UNIQUE_NAME", args.LookIn));
-                        restrictions.Add(new AdomdRestriction("MEMBER_CAPTION", sLine.Trim()));
+                        //restrictions.Add(new AdomdRestriction("HIERARCHY_UNIQUE_NAME", args.LookIn)); //doesn't work in AtScale
+                        
+                        //restrictions.Add(new AdomdRestriction(
+                        //    "LEVEL_UNIQUE_NAME"
+                        //    , args.LookIn + '.' + args.LookIn.Split('.')[1]
+                        //    ));
+
+                        //seems to be a limit of 3 restrictions?  MEMBER_UNIQUE_NAME restriction is ignored if you add the LEVEL_UNIQUE_NAME restriction
+                        //restrictions.Add(new AdomdRestriction("MEMBER_CAPTION", sLine.Trim())); //doesn't work in AtScale
+                        restrictions.Add(new AdomdRestriction(
+                            "MEMBER_UNIQUE_NAME"
+                            , args.LookIn + '.' + args.LookIn.Split('.')[1] + ".&[" + sLine.Trim() + "]"
+                            )); //sus
+
                         System.Data.DataTable tblExactMatchMembers = cube.ParentConnection.GetSchemaDataSet("MDSCHEMA_MEMBERS", restrictions).Tables[0];
 
                         if (tblExactMatchMembers.Rows.Count > 0)
