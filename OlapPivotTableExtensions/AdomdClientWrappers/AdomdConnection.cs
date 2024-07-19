@@ -105,7 +105,7 @@ namespace OlapPivotTableExtensions.AdomdClientWrappers
             {
                 if (_type == AdomdType.AnalysisServices)
                 {
-                    return _conn.Properties.Find("CustomData").Value.ToString();
+                    return _conn.Properties.Find("CustomData")?.Value.ToString() ?? "";
                 }
                 else
                 {
